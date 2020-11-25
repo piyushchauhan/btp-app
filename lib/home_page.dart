@@ -29,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => VideoPage()));
+                    MaterialPageRoute(builder: (context) => VideoPlayerScreen()));
               },
               child: Text('Video'),
             ),
