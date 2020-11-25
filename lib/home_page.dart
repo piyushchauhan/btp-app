@@ -1,8 +1,6 @@
-import 'dart:io';
-
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:tflite/tflite.dart';
+import 'package:safety_app/image_page.dart';
+import 'package:safety_app/video_page.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -10,19 +8,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  File _imageFile;
-  final picker = ImagePicker();
-  List recognitions;
-  Duration timeToInfer;
-  bool isLoading;
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-    setState(() {
-      _imageFile = File(pickedFile.path);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,129 +15,24 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('Classification app'),
       ),
       body: Center(
-        child: _imageFile == null
-            ? Text('No image selected.')
-            : Column(
-                children: [
-                  Image.file(
-                    _imageFile,
-                    height: MediaQuery.of(context).size.height * .8,
-                    width: MediaQuery.of(context).size.width * .8,
-                  ),
-                  RaisedButton(
-                    onPressed: () async {
-                      print('Evaluating');
-                      String res = await Tflite.loadModel(
-                          model:
-                              "assets/efficientnet-lite3/efficientnet-lite3-fp32.tflite",
-                          labels: "assets/labels_map.txt",
-                          numThreads: 1,
-                          // defaults to 1
-                          isAsset: true,
-                          // defaults to true, set to false to load resources outside assets
-                          useGpuDelegate: true
-                          // defaults to false, set to true to use GPU delegate
-                          );
-
-                      print(res);
-                      DateTime start = DateTime.now();
-
-                      // Process
-                      recognitions = await Tflite.runModelOnImage(
-                          path: _imageFile.path, // required
-                          // imageMean: 0.0, // defaults to 117.0
-                          // imageStd: 255.0, // defaults to 1.0
-                          // numResults: 2, // defaults to 5
-                          threshold: 0.1, // defaults to 0.1
-                          asynch: true // defaults to true
-                          );
-                      timeToInfer = DateTime.now().difference(start);
-                      print(recognitions);
-                      print('Time to infer: ${timeToInfer.inMilliseconds} ms');
-                      await showModalBottomSheet<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return InferenceModelSheet(
-                            recognitions: recognitions,
-                            timetoInfer: timeToInfer,
-                          );
-                        },
-                      );
-                      await Tflite.close();
-                    },
-                    child: Text('Evaluate'),
-                  ),
-                ],
-              ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: getImage,
-        tooltip: 'Pick Image',
-        child: Icon(Icons.add_a_photo),
-      ),
-    );
-  }
-}
-
-class InferenceModelSheet extends StatelessWidget {
-  const InferenceModelSheet({
-    Key key,
-    @required this.recognitions,
-    @required this.timetoInfer,
-  }) : super(key: key);
-  final Duration timetoInfer;
-  final List recognitions;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      color: Colors.amber,
-      child: Center(
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            const Text(
-              'Inference Results',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 26,
-              ),
-            ),
-            // Text(recognitions.toString()),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: recognitions.length > 0
-                    ? ListView.separated(
-                        // itemExtent: 20,
-                        itemCount: recognitions.length,
-                        separatorBuilder: (context, index) {
-                          return Divider(
-                            height: 2,
-                            color: Colors.white,
-                          );
-                        },
-                        itemBuilder: (context, index) {
-                          final recognition = recognitions[index];
-                          final confidence =
-                              recognition['confidence'].toDouble();
-                          final modi = recognition['label']
-                              .split(':')[1]
-                              .trim()
-                              .substring(1);
-                          final label = modi.substring(0, modi.length - 2);
-                          return Text('$label:\t$confidence');
-                        })
-                    : Text('No results'),
-              ),
-            ),
-            Text('Time to infer: ${timetoInfer.inMilliseconds} ms'),
+          children: [
             RaisedButton(
-              child: const Text('Close'),
-              onPressed: () => Navigator.pop(context),
-            )
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ImagePage()));
+              },
+              child: Text('Image'),
+            ),
+            SizedBox(width: 20),
+            RaisedButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => VideoPage()));
+              },
+              child: Text('Video'),
+            ),
           ],
         ),
       ),
