@@ -42,33 +42,39 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       // Use a FutureBuilder to display a loading spinner while waiting for the
       // VideoPlayerController to finish initializing.
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Visibility(
             visible: _controller != null,
-            child: FutureBuilder(
-              future: _initializeVideoPlayerFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  // If the VideoPlayerController has finished initialization, use
-                  // the data it provides to limit the aspect ratio of the video.
-                  return AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    // Use the VideoPlayer widget to display the video.
-                    child: VideoPlayer(_controller),
-                  );
-                } else {
-                  // If the VideoPlayerController is still initializing, show a
-                  // loading spinner.
-                  return Center(child: CircularProgressIndicator());
-                }
-              },
+            child: Center(
+              child: FutureBuilder(
+                future: _initializeVideoPlayerFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    // If the VideoPlayerController has finished initialization, use
+                    // the data it provides to limit the aspect ratio of the video.
+                    return AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      // Use the VideoPlayer widget to display the video.
+                      child: VideoPlayer(_controller),
+                    );
+                  } else {
+                    // If the VideoPlayerController is still initializing, show a
+                    // loading spinner.
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
             ),
           ),
-          RaisedButton(
-            child: Text("Video"),
-            onPressed: () {
-              getVideo();
-            },
+          Center(
+            child: RaisedButton(
+              color: Colors.blue,
+              child: Text("Video"),
+              onPressed: () {
+                getVideo();
+              },
+            ),
           ),
         ],
       ),
@@ -78,6 +84,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               onPressed: () {
                 // Wrap the play or pause in a call to `setState`. This ensures the
                 // correct icon is shown.
+                _controller.position.then((value) => print(
+                    '${value.inMinutes} m : ${value.inSeconds} s: ${value.inMilliseconds} ms'));
+
                 setState(() {
                   // If the video is playing, pause it.
                   if (_controller.value.isPlaying) {

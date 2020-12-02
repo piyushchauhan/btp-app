@@ -23,15 +23,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ImagePage()));
               },
-              child: Text('Image'),
+              color: Colors.yellow,
+              child: Container(
+                child: Center(child: Text('IMAGE')),
+                height: MediaQuery.of(context).size.height * 8 / 10,
+                width: MediaQuery.of(context).size.width * 3 / 10,
+              ),
             ),
             SizedBox(width: 20),
             RaisedButton(
+              color: Colors.lightBlue,
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => VideoPlayerScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => VideoPlayerScreen()));
               },
-              child: Text('Video'),
+              child: Container(
+                child: Center(child: Text('VIDEO')),
+                height: MediaQuery.of(context).size.height * 8 / 10,
+                width: MediaQuery.of(context).size.width * 3 / 10,
+              ),
             ),
           ],
         ),

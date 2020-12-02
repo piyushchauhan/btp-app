@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,21 @@ class _ImagePageState extends State<ImagePage> {
     setState(() {
       _imageFile = File(pickedFile.path);
     });
+  }
+
+  Uint8List imageToByteListUint8(img.Image image, int inputSize) {
+    var convertedBytes = Uint8List(1 * inputSize * inputSize * 3);
+    var buffer = Uint8List.view(convertedBytes.buffer);
+    int pixelIndex = 0;
+    for (var i = 0; i < inputSize; i++) {
+      for (var j = 0; j < inputSize; j++) {
+        var pixel = image.getPixel(j, i);
+        buffer[pixelIndex++] = img.getRed(pixel);
+        buffer[pixelIndex++] = img.getGreen(pixel);
+        buffer[pixelIndex++] = img.getBlue(pixel);
+      }
+    }
+    return convertedBytes.buffer.asUint8List();
   }
 
   @override
@@ -58,6 +75,18 @@ class _ImagePageState extends State<ImagePage> {
                       DateTime start = DateTime.now();
 
                       // Process
+                      /*
+                      img.Image image =
+                          img.decodeImage(_imageFile.readAsBytesSync());
+                      recognitions = await Tflite.runModelOnBinary(
+                          binary: imageToByteListUint8(image, 112), // required
+                          numResults: 6, // defaults to 5
+                          threshold: 0.1, // defaults to 0.1
+
+                          asynch: true // defaults to true
+                          );
+                          */
+
                       recognitions = await Tflite.runModelOnImage(
                           path: _imageFile.path, // required
                           // imageMean: 0.0, // defaults to 117.0

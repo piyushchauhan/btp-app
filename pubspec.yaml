@@ -29,10 +29,9 @@ dependencies:
   tflite: ^1.1.1
   firebase_ml_vision: ^0.9.9
   video_player: ^1.0.1
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.3
+  image: ^2.1.19
+  cupertino_icons: ^1.0.0
+  # tflite_flutter_helper: ^0.1.2
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +49,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/efficientnet-lite3/efficientnet-lite3-fp32.tflite
+    - assets/efficientnet-lite3/efficientnet-lite3-int8.tflite
+    - assets/model-fp-16.tflite
     - assets/labels_map.txt
     # - assets/mobilenet_v1.tflite
 
