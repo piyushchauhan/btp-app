@@ -31,7 +31,10 @@ dependencies:
   video_player: ^1.0.1
   image: ^2.1.19
   cupertino_icons: ^1.0.0
-  # tflite_flutter_helper: ^0.1.2
+  path_provider: ^1.6.24
+  camera: ^0.5.8+11
+  tflite_flutter: ^0.5.0
+  tflite_flutter_helper: ^0.1.2
 
 dev_dependencies:
   flutter_test:
@@ -50,8 +53,8 @@ flutter:
   assets:
     - assets/efficientnet-lite3/efficientnet-lite3-fp32.tflite
     - assets/efficientnet-lite3/efficientnet-lite3-int8.tflite
-    - assets/model-fp-16.tflite
-    - assets/labels_map.txt
+    - assets/efficientnet-lite3/labels_map.txt
+    - assets/porn-nonporn/
     # - assets/mobilenet_v1.tflite
 
   # An image asset can refer to one or more resolution-specific "variants", see

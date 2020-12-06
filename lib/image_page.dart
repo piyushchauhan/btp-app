@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:image/image.dart' as img;
-
-import 'package:image_picker/image_picker.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
+import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 
 class ImagePage extends StatefulWidget {
@@ -14,9 +17,10 @@ class ImagePage extends StatefulWidget {
 class _ImagePageState extends State<ImagePage> {
   File _imageFile;
   final picker = ImagePicker();
-  List recognitions;
+  List _recognitions;
   Duration timeToInfer;
   bool isLoading;
+
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
@@ -40,6 +44,59 @@ class _ImagePageState extends State<ImagePage> {
     return convertedBytes.buffer.asUint8List();
   }
 
+  Uint8List imageToByteListFloat32(
+      img.Image image, int inputSize, double mean, double std) {
+    var convertedBytes = Float32List(1 * inputSize * inputSize * 3);
+    var buffer = Float32List.view(convertedBytes.buffer);
+    int pixelIndex = 0;
+    for (var i = 0; i < inputSize; i++) {
+      for (var j = 0; j < inputSize; j++) {
+        var pixel = image.getPixel(j, i);
+        buffer[pixelIndex++] = (img.getRed(pixel) - mean) / std;
+        buffer[pixelIndex++] = (img.getGreen(pixel) - mean) / std;
+        buffer[pixelIndex++] = (img.getBlue(pixel) - mean) / std;
+      }
+    }
+    return convertedBytes.buffer.asUint8List();
+  }
+
+  loadModel() async {
+    print('Loading model');
+    String res = await Tflite.loadModel(
+        model: 'assets/porn-nonporn/porn-classif-fp-32.tflite',
+        labels: 'assets/porn-nonporn/labels.txt',
+        numThreads: 1,
+        // defaults to 1
+        isAsset: true,
+        // defaults to true, set to false to load resources outside assets
+        useGpuDelegate: true
+        // defaults to false, set to true to use GPU delegate
+        );
+
+    print('Load model result: $res');
+  }
+
+  Future recognizeImageBinary(File image) async {
+    final start = DateTime.now();
+    img.Image oriImage = img.decodeImage(image.readAsBytesSync());
+    final inputSize = 64;
+    img.Image resizedImage = img.copyResize(
+      oriImage,
+      height: inputSize,
+      width: inputSize,
+    );
+    var recognitions = await Tflite.runModelOnBinary(
+      binary: imageToByteListFloat32(resizedImage, inputSize, 117.0, 1),
+      numResults: 6,
+      threshold: 0.05,
+    );
+    setState(() {
+      _recognitions = recognitions;
+    });
+    timeToInfer = DateTime.now().difference(start);
+    print("Inference took ${timeToInfer.inMilliseconds} ms");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,51 +115,19 @@ class _ImagePageState extends State<ImagePage> {
                   ),
                   RaisedButton(
                     onPressed: () async {
-                      print('Evaluating');
-                      String res = await Tflite.loadModel(
-                          model:
-                              "assets/efficientnet-lite3/efficientnet-lite3-fp32.tflite",
-                          labels: "assets/labels_map.txt",
-                          numThreads: 1,
-                          // defaults to 1
-                          isAsset: true,
-                          // defaults to true, set to false to load resources outside assets
-                          useGpuDelegate: true
-                          // defaults to false, set to true to use GPU delegate
-                          );
+                      await loadModel();
+                      try {
+                        await recognizeImageBinary(_imageFile);
+                      } on Exception catch (e) {
+                        print(e.toString());
+                      }
 
-                      print(res);
-                      DateTime start = DateTime.now();
-
-                      // Process
-                      /*
-                      img.Image image =
-                          img.decodeImage(_imageFile.readAsBytesSync());
-                      recognitions = await Tflite.runModelOnBinary(
-                          binary: imageToByteListUint8(image, 112), // required
-                          numResults: 6, // defaults to 5
-                          threshold: 0.1, // defaults to 0.1
-
-                          asynch: true // defaults to true
-                          );
-                          */
-
-                      recognitions = await Tflite.runModelOnImage(
-                          path: _imageFile.path, // required
-                          // imageMean: 0.0, // defaults to 117.0
-                          // imageStd: 255.0, // defaults to 1.0
-                          // numResults: 2, // defaults to 5
-                          threshold: 0.1, // defaults to 0.1
-                          asynch: true // defaults to true
-                          );
-                      timeToInfer = DateTime.now().difference(start);
-                      print(recognitions);
-                      print('Time to infer: ${timeToInfer.inMilliseconds} ms');
+                      print(_recognitions.toString());
                       await showModalBottomSheet<void>(
                         context: context,
                         builder: (BuildContext context) {
                           return InferenceModelSheet(
-                            recognitions: recognitions,
+                            recognitions: _recognitions,
                             timetoInfer: timeToInfer,
                           );
                         },
@@ -165,14 +190,12 @@ class InferenceModelSheet extends StatelessWidget {
                         },
                         itemBuilder: (context, index) {
                           final recognition = recognitions[index];
-                          final confidence =
-                              recognition['confidence'].toDouble();
-                          final modi = recognition['label']
-                              .split(':')[1]
-                              .trim()
-                              .substring(1);
-                          final label = modi.substring(0, modi.length - 2);
-                          return Text('$label:\t$confidence');
+                          final double confidence = recognition['confidence'];
+                          final String label = recognition['label'];
+                          return Text(label.toString() +
+                              '\t' +
+                              confidence.toString().substring(0, 7));
+                          // return Text('$label:\t$confidence');
                         })
                     : Text('No results'),
               ),
