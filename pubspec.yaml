@@ -33,8 +33,8 @@ dependencies:
   cupertino_icons: ^1.0.0
   path_provider: ^1.6.24
   camera: ^0.5.8+11
-  tflite_flutter: ^0.5.0
-  tflite_flutter_helper: ^0.1.2
+  # tflite_flutter: ^0.5.0
+  # tflite_flutter_helper: ^0.1.2
 
 dev_dependencies:
   flutter_test:
@@ -51,10 +51,11 @@ flutter:
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/efficientnet-lite3/efficientnet-lite3-fp32.tflite
-    - assets/efficientnet-lite3/efficientnet-lite3-int8.tflite
-    - assets/efficientnet-lite3/labels_map.txt
+    # - assets/efficientnet-lite3/efficientnet-lite3-fp32.tflite
+    # - assets/efficientnet-lite3/efficientnet-lite3-int8.tflite
+    # - assets/efficientnet-lite3/labels_map.txt
     - assets/porn-nonporn/
+    # - assets/real-fake/
     # - assets/mobilenet_v1.tflite
 
   # An image asset can refer to one or more resolution-specific "variants", see

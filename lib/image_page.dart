@@ -1,11 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:image/image.dart' as img;
-import 'package:tflite_flutter/tflite_flutter.dart';
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 
@@ -63,15 +60,17 @@ class _ImagePageState extends State<ImagePage> {
   loadModel() async {
     print('Loading model');
     String res = await Tflite.loadModel(
-        model: 'assets/porn-nonporn/porn-classif-fp-32.tflite',
-        labels: 'assets/porn-nonporn/labels.txt',
-        numThreads: 1,
-        // defaults to 1
-        isAsset: true,
-        // defaults to true, set to false to load resources outside assets
-        useGpuDelegate: true
-        // defaults to false, set to true to use GPU delegate
-        );
+      model: 'assets/porn-nonporn/porn-classif-fp-32.tflite',
+      // model: 'assets/real-fake/real-fake-classif-fp32.tflite',
+      labels: 'assets/porn-nonporn/labels.txt',
+      // labels: 'assets/real-fake/labels.txt',
+      numThreads: 4,
+      // defaults to 1
+      isAsset: true,
+      // defaults to true, set to false to load resources outside assets
+      // useGpuDelegate: true,
+      // defaults to false, set to true to use GPU delegate
+    );
 
     print('Load model result: $res');
   }
@@ -192,10 +191,7 @@ class InferenceModelSheet extends StatelessWidget {
                           final recognition = recognitions[index];
                           final double confidence = recognition['confidence'];
                           final String label = recognition['label'];
-                          return Text(label.toString() +
-                              '\t' +
-                              confidence.toString().substring(0, 7));
-                          // return Text('$label:\t$confidence');
+                          return Text('$label : $confidence');
                         })
                     : Text('No results'),
               ),
