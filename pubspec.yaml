@@ -32,7 +32,8 @@ dependencies:
   image: ^2.1.19
   cupertino_icons: ^1.0.0
   path_provider: ^1.6.24
-  camera: ^0.5.8+11
+  camera:
+  path:
   # tflite_flutter: ^0.5.0
   # tflite_flutter_helper: ^0.1.2
 

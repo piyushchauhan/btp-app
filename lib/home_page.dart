@@ -1,4 +1,6 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:safety_app/camera.dart';
 import 'package:safety_app/image_page.dart';
 import 'package:safety_app/video_page.dart';
 
@@ -18,60 +20,42 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            /* RaisedButton(
+            RaisedButton(
+              color: Colors.green,
+              onPressed: () async {
+                List<CameraDescription> cameras = await availableCameras();
+                if (cameras.length > 0)
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CameraPage(camera: cameras[0]),
+                    ),
+                  );
+              },
+              child: Container(child: Center(child: Text('CAMERA'))),
+            ),
+            RaisedButton(
+              color: Colors.yellow,
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ImagePage()));
               },
-              color: ,
-              child: Container(
-                child: Center(child: Text('IMAGE')),
-                height: MediaQuery.of(context).size.height * 8 / 10,
-                width: MediaQuery.of(context).size.width * 3 / 10,
-              ),
-            ), */
-            OperationButton(
-              name: 'IMAGE',
-              color: Colors.yellow,
-              screen: ImagePage(),
+              child: Container(child: Center(child: Text('IMAGE'))),
             ),
-            SizedBox(width: 20),
-            OperationButton(
-              name: 'VIDEO',
-              screen: VideoPlayerScreen(),
+            RaisedButton(
               color: Colors.lightBlue,
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => VideoPlayerScreen()));
+              },
+              child: Container(
+                child: Center(child: Text('VIDEO')),
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class OperationButton extends StatelessWidget {
-  final screen;
-
-  final color;
-  final String name;
-  const OperationButton({
-    Key key,
-    this.color,
-    @required this.screen,
-    this.name,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return RaisedButton(
-      color: color,
-      onPressed: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => screen));
-      },
-      child: Container(
-        child: Center(child: Text(name)),
-        height: MediaQuery.of(context).size.height * 8 / 10,
-        width: MediaQuery.of(context).size.width * 3 / 10,
       ),
     );
   }
