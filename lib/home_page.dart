@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:safety_app/camera.dart';
 import 'package:safety_app/image_page.dart';
 import 'package:safety_app/video_page.dart';
+import 'package:imei_plugin/imei_plugin.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -10,6 +11,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String imei;
+  getImei() async {
+    String i = await ImeiPlugin.getImei();
+    setState(() {
+      imei = i;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getImei();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CameraPage(camera: cameras[0]),
+                      builder: (context) => CameraPage(
+                        camera: cameras[0],
+                        imei: imei,
+                      ),
                     ),
                   );
               },
@@ -40,9 +58,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ImagePage()));
               },
-              child: Container(child: Center(child: Text('IMAGE'))),
+              child: Container(child: Center(child: Text('GALLERY'))),
             ),
-            RaisedButton(
+            /* RaisedButton(
               color: Colors.lightBlue,
               onPressed: () {
                 Navigator.push(
@@ -53,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 child: Center(child: Text('VIDEO')),
               ),
-            ),
+            ), */
           ],
         ),
       ),

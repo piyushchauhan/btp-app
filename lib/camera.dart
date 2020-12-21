@@ -1,10 +1,5 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:path/path.dart' show join;
-import 'package:path_provider/path_provider.dart';
 import 'package:safety_app/classifier.dart';
 import 'package:tflite/tflite.dart';
 
@@ -12,7 +7,9 @@ typedef void Callback(List<dynamic> list, int h, int w);
 
 class CameraPage extends StatefulWidget {
   final CameraDescription camera;
-  CameraPage({@required this.camera});
+
+  final String imei;
+  CameraPage({@required this.camera, this.imei});
   @override
   _CameraPageState createState() => _CameraPageState();
 }
@@ -36,7 +33,8 @@ class _CameraPageState extends State<CameraPage> {
             child: ListBody(
               children: <Widget>[
                 Text('You are recording content that is obscene'),
-                Text('Your phone details will be stored?'),
+                Text('Your IMEI number is ${widget.imei} '
+                    'will shared with admin.'),
               ],
             ),
           ),
@@ -46,7 +44,6 @@ class _CameraPageState extends State<CameraPage> {
               onPressed: () {
                 haltFrames = false;
                 Navigator.of(context).pop();
-                // TODO Store IMEI data
               },
             ),
             TextButton(
@@ -83,6 +80,7 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     super.initState();
+    print('IMEI number ' + widget.imei);
     loadModel().then((_) {
       modelLoaded = true;
     });
@@ -94,7 +92,7 @@ class _CameraPageState extends State<CameraPage> {
       setState(() {});
       controller.startImageStream((CameraImage img) async {
         if (haltFrames) {
-          // await _showMyDialog();
+          await _showMyDialog();
         } else if (modelLoaded && !isDetecting) {
           isDetecting = true;
           int startTime = new DateTime.now().millisecondsSinceEpoch;
@@ -133,7 +131,7 @@ class _CameraPageState extends State<CameraPage> {
               children: [
                 AspectRatio(
                   aspectRatio: controller.value.aspectRatio,
-                  child: CameraPreview(controller),
+                  child: haltFrames ? CameraPreview(controller) : Container(),
                 ),
                 Text('Time epoch: ${DateTime.now().millisecondsSinceEpoch}\n' +
                     printLables()),
