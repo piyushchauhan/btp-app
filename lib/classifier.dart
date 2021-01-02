@@ -5,10 +5,11 @@ import 'package:camera/camera.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image/image.dart' as img;
 
-Future<void> loadModel() async {
-  print('Loading model');
+Future<String> loadModel() async {
+  final modelFile = 'assets/porn-nonporn/student32.tflite';
+  print('Loading model $modelFile');
   String res = await Tflite.loadModel(
-    model: 'assets/porn-nonporn/porn-classif-fp-32.tflite',
+    model: modelFile,
     labels: 'assets/porn-nonporn/labels.txt',
     numThreads: 100,
     isAsset: true,
@@ -16,6 +17,7 @@ Future<void> loadModel() async {
   );
 
   print('Load model result: $res');
+  return res;
 }
 
 Uint8List imageToByteListUint8(img.Image image, int inputSize) {
@@ -52,7 +54,7 @@ Uint8List imageToByteListFloat32(
 Future<List> recognizeImageBinary(File image) async {
   final start = DateTime.now();
   img.Image oriImage = img.decodeImage(image.readAsBytesSync());
-  final inputSize = 224;
+  final inputSize = 64;
   img.Image resizedImage = img.copyResize(
     oriImage,
     height: inputSize,

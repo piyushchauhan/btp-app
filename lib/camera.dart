@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:safety_app/classifier.dart';
 import 'package:video_player/video_player.dart';
 
 class CameraExampleHome extends StatefulWidget {
@@ -42,6 +43,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   double _maxAvailableZoom;
   double _currentScale = 1.0;
   double _baseScale = 1.0;
+  bool modelLoaded = false;
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
@@ -50,6 +52,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    loadModel().then((res) {
+      if (res == 'success') {
+        modelLoaded = true;
+      }
+    });
   }
 
   @override
@@ -319,8 +326,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           videoController?.dispose();
           videoController = null;
         });
-        // TODO Process image
-        if (file != null) showInSnackBar('Picture saved to ${file.path}');
+        if (file != null) {
+          String result = 'Picture saved to ${file.path}';
+          recognizeImageBinary(File(file.path)).then((recognitions) {
+            print('Found ${recognitions.length} recognitions');
+
+            // Build recognitions string
+            recognitions.forEach((recognition) {
+              final confidence = recognition['confidence'].toString();
+              final label = recognition['label'].toString();
+              result += '\n$label : $confidence';
+            });
+
+            // Show Result of picture taken
+            print('Image result:' + result);
+            showInSnackBar(result);
+          });
+        }
       }
     });
   }

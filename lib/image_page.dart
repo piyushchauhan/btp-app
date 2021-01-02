@@ -17,13 +17,15 @@ class _ImagePageState extends State<ImagePage> {
   bool isLoading;
 
   Future getImage() async {
-    await loadModel();
+    loadModel();
 
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
-    setState(() {
-      _imageFile = File(pickedFile.path);
-    });
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
   }
 
   @override
