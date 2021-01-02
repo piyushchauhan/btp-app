@@ -49,25 +49,25 @@ class _ImagePageState extends State<ImagePage> {
                       final now = DateTime.now();
                       try {
                         recognitions = await recognizeImageBinary(_imageFile);
+                        setState(() {
+                          _recognitions = recognitions;
+                        });
+                        timeToInfer = DateTime.now().difference(now);
+
+                        print(_recognitions.toString());
+
+                        await showModalBottomSheet<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InferenceModelSheet(
+                              recognitions: _recognitions,
+                              timetoInfer: timeToInfer,
+                            );
+                          },
+                        );
                       } on Exception catch (e) {
                         print(e.toString());
                       }
-                      setState(() {
-                        _recognitions = recognitions;
-                      });
-                      timeToInfer = DateTime.now().difference(now);
-
-                      print(_recognitions.toString());
-
-                      await showModalBottomSheet<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return InferenceModelSheet(
-                            recognitions: _recognitions,
-                            timetoInfer: timeToInfer,
-                          );
-                        },
-                      );
                     },
                     child: Text('Evaluate'),
                   ),

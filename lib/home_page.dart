@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => CameraPage(
-                        camera: cameras[0],
+                        cameras: cameras,
                         imei: imei,
                       ),
                     ),

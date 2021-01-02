@@ -6,10 +6,10 @@ import 'package:tflite/tflite.dart';
 typedef void Callback(List<dynamic> list, int h, int w);
 
 class CameraPage extends StatefulWidget {
-  final CameraDescription camera;
+  final List<CameraDescription> cameras;
 
   final String imei;
-  CameraPage({@required this.camera, this.imei});
+  CameraPage({@required this.cameras, this.imei});
   @override
   _CameraPageState createState() => _CameraPageState();
 }
@@ -84,12 +84,13 @@ class _CameraPageState extends State<CameraPage> {
     loadModel().then((_) {
       modelLoaded = true;
     });
-    controller = CameraController(widget.camera, ResolutionPreset.medium);
-    controller.initialize().then((_) {
+    controller = CameraController(widget.cameras[0], ResolutionPreset.medium);
+    controller.initialize().then((_) async {
       if (!mounted) {
         return;
       }
       setState(() {});
+      await Future.delayed(Duration(milliseconds: 200));
       controller.startImageStream((CameraImage img) async {
         if (haltFrames) {
           await _showMyDialog();

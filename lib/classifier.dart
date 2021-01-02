@@ -8,16 +8,11 @@ import 'package:image/image.dart' as img;
 Future<void> loadModel() async {
   print('Loading model');
   String res = await Tflite.loadModel(
-    model: 'assets/porn-nonporn/porn-classif-fp-32.tflite',
-    // model: 'assets/real-fake/real-fake-classif-fp32.tflite',
+    model: 'assets/porn-nonporn/teacher.tflite',
     labels: 'assets/porn-nonporn/labels.txt',
-    // labels: 'assets/real-fake/labels.txt',
-    numThreads: 4,
-    // defaults to 1
+    numThreads: 100,
     isAsset: true,
-    // defaults to true, set to false to load resources outside assets
-    // useGpuDelegate: true,
-    // defaults to false, set to true to use GPU delegate
+    useGpuDelegate: true,
   );
 
   print('Load model result: $res');
