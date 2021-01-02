@@ -32,7 +32,7 @@ dependencies:
   image: ^2.1.19
   cupertino_icons: ^1.0.0
   path_provider: ^1.6.24
-  camera:
+  camera: ^0.6.3+2
   path:
   imei_plugin: ^1.2.0
   # tflite_flutter: ^0.5.0

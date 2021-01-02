@@ -8,7 +8,7 @@ import 'package:image/image.dart' as img;
 Future<void> loadModel() async {
   print('Loading model');
   String res = await Tflite.loadModel(
-    model: 'assets/porn-nonporn/teacher.tflite',
+    model: 'assets/porn-nonporn/porn-classif-fp-32.tflite',
     labels: 'assets/porn-nonporn/labels.txt',
     numThreads: 100,
     isAsset: true,

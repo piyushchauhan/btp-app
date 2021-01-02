@@ -43,14 +43,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CameraPage(
+                      builder: (context) => CameraExampleHome(
                         cameras: cameras,
-                        imei: imei,
+                        // imei: imei,
                       ),
                     ),
                   );
               },
-              child: Container(child: Center(child: Text('CAMERA'))),
+              child: Container(child: Center(child: Text('REAL TIME'))),
             ),
             RaisedButton(
               color: Colors.yellow,
@@ -58,9 +58,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ImagePage()));
               },
-              child: Container(child: Center(child: Text('GALLERY'))),
+              child: Container(child: Center(child: Text('IMAGE'))),
             ),
-            /* RaisedButton(
+            RaisedButton(
               color: Colors.lightBlue,
               onPressed: () {
                 Navigator.push(
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 child: Center(child: Text('VIDEO')),
               ),
-            ), */
+            ),
           ],
         ),
       ),
