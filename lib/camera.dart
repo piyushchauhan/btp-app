@@ -44,6 +44,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   double _currentScale = 1.0;
   double _baseScale = 1.0;
   bool modelLoaded = false;
+  bool inferencing = false;
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
@@ -355,20 +356,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onVideoRecordButtonPressed() {
+    controller.startImageStream((image) => print('Hello'));
+
     startVideoRecording().then((_) {
       if (mounted) {
         setState(() {});
-        // TODO Start camera stream
       }
-      ;
     });
   }
 
-  void onStopButtonPressed() {
-    stopVideoRecording().then((file) {
+  Future<void> onStopButtonPressed() async {
+    stopVideoRecording().then((file) async {
+    await controller.stopImageStream();
+
       if (mounted) setState(() {});
       if (file != null) {
         // TODO Show processing result
+        await controller.stopImageStream();
         showInSnackBar('Video recorded to ${file.path}');
         videoFile = file;
         _startVideoPlayer();

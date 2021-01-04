@@ -27,7 +27,6 @@ dependencies:
   image_picker: ^0.6.7+9
   flutter_image_compress: ^0.7.0
   tflite: ^1.1.1
-  firebase_ml_vision: ^0.9.9
   video_player: ^1.0.1
   image: ^2.1.19
   cupertino_icons: ^1.0.0
@@ -35,6 +34,8 @@ dependencies:
   camera: ^0.6.3+2
   path:
   imei_plugin: ^1.2.0
+  firebase_core: ^0.5.3
+  cloud_firestore: ^0.14.4
   # tflite_flutter: ^0.5.0
   # tflite_flutter_helper: ^0.1.2
 

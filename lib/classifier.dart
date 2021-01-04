@@ -70,7 +70,7 @@ Future<List> recognizeImageBinary(File image) async {
   return recognitions;
 }
 
-cameraClassif(CameraImage img) async {
+Future cameraClassif(CameraImage img) async {
   var recognitions = await Tflite.runModelOnFrame(
     bytesList: img.planes.map((plane) {
       return plane.bytes;
