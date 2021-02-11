@@ -7,8 +7,12 @@ import 'package:video_player/video_player.dart';
 
 class CameraExampleHome extends StatefulWidget {
   final List<CameraDescription> cameras;
-
-  const CameraExampleHome({Key key, this.cameras}) : super(key: key);
+  final String imei;
+  const CameraExampleHome({
+    Key key,
+    this.cameras,
+    this.imei,
+  }) : super(key: key);
 
   @override
   _CameraExampleHomeState createState() => _CameraExampleHomeState();
@@ -38,7 +42,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   XFile videoFile;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
-  bool enableAudio = true;
+  bool enableAudio = false;
   double _minAvailableZoom;
   double _maxAvailableZoom;
   double _currentScale = 1.0;
@@ -48,6 +52,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
+
+  int totalFramesProcessed = 0;
+  int obsceneFrames = 0;
 
   @override
   void initState() {
@@ -210,6 +217,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
+        /* 
         IconButton(
           icon: const Icon(Icons.camera_alt),
           color: Colors.blue,
@@ -219,15 +227,17 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ? onTakePictureButtonPressed
               : null,
         ),
+        */
         IconButton(
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
           onPressed: controller != null &&
                   controller.value.isInitialized &&
-                  !controller.value.isRecordingVideo
+                  !controller.value.isStreamingImages
               ? onVideoRecordButtonPressed
               : null,
         ),
+        /* 
         IconButton(
           icon: controller != null && controller.value.isRecordingPaused
               ? Icon(Icons.play_arrow)
@@ -241,12 +251,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   : onPauseButtonPressed)
               : null,
         ),
+        */
         IconButton(
           icon: const Icon(Icons.stop),
           color: Colors.red,
           onPressed: controller != null &&
                   controller.value.isInitialized &&
-                  controller.value.isRecordingVideo
+                  controller.value.isStreamingImages
               ? onStopButtonPressed
               : null,
         )
@@ -356,8 +367,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onVideoRecordButtonPressed() {
-    controller.startImageStream((image) => print('Hello'));
-
     startVideoRecording().then((_) {
       if (mounted) {
         setState(() {});
@@ -366,17 +375,12 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<void> onStopButtonPressed() async {
-    stopVideoRecording().then((file) async {
-    await controller.stopImageStream();
-
+    stopVideoRecording().then((_) async {
       if (mounted) setState(() {});
-      if (file != null) {
-        // TODO Show processing result
-        await controller.stopImageStream();
-        showInSnackBar('Video recorded to ${file.path}');
-        videoFile = file;
-        _startVideoPlayer();
-      }
+      print(
+          "Total frames processed: $totalFramesProcessed\nObscene frames: $obsceneFrames");
+      final percent = obsceneFrames / totalFramesProcessed * 100;
+      showInSnackBar('Video contained $percent% osbcene frames');
     });
   }
 
@@ -400,13 +404,50 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       return;
     }
 
-    if (controller.value.isRecordingVideo) {
+    if (controller.value.isRecordingVideo ||
+        controller.value.isStreamingImages) {
       // A recording is already started, do nothing.
       return;
     }
 
     try {
-      await controller.startVideoRecording();
+      await controller.startImageStream((image) async {
+        if (!inferencing) {
+          inferencing = true;
+
+          final List recognitions = await cameraClassif(image);
+          print(recognitions.toString());
+          totalFramesProcessed += 1;
+
+          double obsceneScore = 0.0, nonObsceneScore = 0.0;
+
+          if (recognitions.length == 2) {
+            if (recognitions[0]['label'] == 'obscene') {
+              obsceneScore = recognitions[0]['confidence'];
+            }
+            if (recognitions[1]['label'] == 'obscene') {
+              obsceneScore = recognitions[1]['confidence'];
+            }
+            if (recognitions[0]['label'] == 'non-obscene') {
+              nonObsceneScore = recognitions[0]['confidence'];
+            }
+            if (recognitions[1]['label'] == 'non-obscene') {
+              nonObsceneScore = recognitions[1]['confidence'];
+            }
+          } else if (recognitions.length == 1) {
+            if (recognitions[0]['label'] == 'obscene') {
+              obsceneScore = recognitions[0]['confidence'];
+            }
+            if (recognitions[0]['label'] == 'non-obscene') {
+              nonObsceneScore = recognitions[0]['confidence'];
+            }
+          }
+          if (obsceneScore > nonObsceneScore) {
+            obsceneFrames += 1;
+          }
+          inferencing = false;
+        }
+      });
     } on CameraException catch (e) {
       _showCameraException(e);
       return;
@@ -414,12 +455,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   Future<XFile> stopVideoRecording() async {
-    if (!controller.value.isRecordingVideo) {
+    if (!controller.value.isStreamingImages) {
       return null;
     }
 
     try {
-      return controller.stopVideoRecording();
+      await controller.stopImageStream();
+      // return controller.stopVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;

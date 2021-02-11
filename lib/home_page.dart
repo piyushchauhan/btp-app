@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(
                           builder: (context) => CameraExampleHome(
                             cameras: cameras,
-                            // imei: imei,
+                            imei: imei,
                           ),
                         ),
                       );
@@ -62,8 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => ImagePage()));
                   },
-                  child: Container(child: Center(child: Text('IMAGE'))),
+                  child: Container(child: Center(child: Text('Gallery'))),
                 ),
+                /* 
                 RaisedButton(
                   color: Colors.lightBlue,
                   onPressed: () {
@@ -75,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Container(
                     child: Center(child: Text('VIDEO')),
                   ),
-                ),
+                ), */
               ],
             ),
           ),
@@ -115,7 +116,7 @@ class Report extends StatelessWidget {
       child: Column(
         children: [
           Text('Your IMEI number is $imei'),
-          RaisedButton(onPressed: addUser, child: Text('Report'))
+          // RaisedButton(onPressed: addUser, child: Text('Report'))
         ],
       ),
     );

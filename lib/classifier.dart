@@ -54,7 +54,7 @@ Uint8List imageToByteListFloat32(
 Future<List> recognizeImageBinary(File image) async {
   final start = DateTime.now();
   img.Image oriImage = img.decodeImage(image.readAsBytesSync());
-  final inputSize = 64;
+  final inputSize = 224;
   img.Image resizedImage = img.copyResize(
     oriImage,
     height: inputSize,
@@ -63,7 +63,7 @@ Future<List> recognizeImageBinary(File image) async {
   var recognitions = await Tflite.runModelOnBinary(
     binary: imageToByteListFloat32(resizedImage, inputSize, 117.0, 1),
     numResults: 6,
-    threshold: 0.05,
+    threshold: 0.0,
   );
   final timeToInfer = DateTime.now().difference(start);
   print("Inference took ${timeToInfer.inMilliseconds} ms");
@@ -81,7 +81,7 @@ Future cameraClassif(CameraImage img) async {
     // imageStd: 127.5, // defaults to 127.5
     // rotation: 90, // defaults to 90, Android only
     // numResults: 2, // defaults to 5
-    // threshold: 0.1, // defaults to 0.1
+    threshold: 0.0, // defaults to 0.1
     // asynch: true // defaults to true
   );
 

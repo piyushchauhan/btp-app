@@ -32,11 +32,11 @@ class _ImagePageState extends State<ImagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Image'),
+        title: Text('Gallery'),
       ),
       body: Center(
         child: _imageFile == null
-            ? Text('No image selected.')
+            ? Text('No media selected.')
             : Column(
                 children: [
                   Image.file(
