@@ -44,7 +44,7 @@ class _ImagePageState extends State<ImagePage> {
                     height: MediaQuery.of(context).size.height * .8,
                     width: MediaQuery.of(context).size.width * .8,
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () async {
                       var recognitions;
                       final now = DateTime.now();
@@ -134,7 +134,7 @@ class InferenceModelSheet extends StatelessWidget {
               ),
             ),
             Text('Time to infer: ${timetoInfer.inMilliseconds} ms'),
-            RaisedButton(
+            ElevatedButton(
               child: const Text('Close'),
               onPressed: () => Navigator.pop(context),
             )

@@ -68,9 +68,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             ),
           ),
           Center(
-            child: RaisedButton(
-              color: Colors.blue,
-              child: Text("Video"),
+            child: ElevatedButton(
+              child: Container(color: Colors.blue, child: Text("Video")),
               onPressed: () {
                 getVideo();
               },

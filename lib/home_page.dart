@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:safety_app/camera.dart';
 import 'package:safety_app/image_page.dart';
-import 'package:safety_app/video_page.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -39,8 +38,19 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                RaisedButton(
-                  color: Colors.green,
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.pressed))
+                          return Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.5);
+                        return Colors.green; // Use the component's default.
+                      },
+                    ),
+                  ),
                   onPressed: () async {
                     List<CameraDescription> cameras = await availableCameras();
                     if (cameras.length > 0)
@@ -54,13 +64,30 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       );
                   },
-                  child: Container(child: Center(child: Text('REAL TIME'))),
+                  child: Container(
+                    color: Colors.green,
+                    child: Center(child: Text('REAL TIME')),
+                  ),
                 ),
-                RaisedButton(
-                  color: Colors.yellow,
+                SizedBox(width: 20),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.pressed))
+                          return Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.5);
+                        return Colors.yellow; // Use the component's default.
+                      },
+                    ),
+                  ),
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ImagePage()));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ImagePage()),
+                    );
                   },
                   child: Container(child: Center(child: Text('Gallery'))),
                 ),
