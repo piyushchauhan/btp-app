@@ -54,7 +54,7 @@ Uint8List imageToByteListFloat32(
 Future<List> recognizeImageBinary(File image) async {
   final start = DateTime.now();
   img.Image oriImage = img.decodeImage(image.readAsBytesSync());
-  final inputSize = 224;
+  final inputSize = 320;
   img.Image resizedImage = img.copyResize(
     oriImage,
     height: inputSize,

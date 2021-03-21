@@ -41,14 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.pressed))
-                          return Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.5);
-                        return Colors.green; // Use the component's default.
-                      },
+                      (Set<MaterialState> states) => Colors.green,
                     ),
                   ),
                   onPressed: () async {
@@ -64,23 +57,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       );
                   },
-                  child: Container(
-                    color: Colors.green,
-                    child: Center(child: Text('REAL TIME')),
+                  child: Center(
+                    child: Text('REAL TIME'),
                   ),
                 ),
                 SizedBox(width: 20),
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.pressed))
-                          return Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.5);
-                        return Colors.yellow; // Use the component's default.
-                      },
+                      (Set<MaterialState> states) =>
+                          Colors.yellow, // Use the component's default.
                     ),
                   ),
                   onPressed: () {
