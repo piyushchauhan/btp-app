@@ -1,13 +1,11 @@
 import 'dart:typed_data';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 
-import 'package:image/image.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:safety_app/camera.dart';
 import 'package:safety_app/classifier.dart';
 
 import 'model/recognition.dart';
@@ -20,8 +18,9 @@ class MultiImagePage extends StatefulWidget {
 class _MultiImagePageState extends State<MultiImagePage> {
   // ignore: deprecated_member_use
   List<Asset> images = List<Asset>();
-  List<Recognition> recognitions;
+  List<Recognition> recognitions = [];
   List<bool> statusImage;
+  int obsceneImages = 0, nonObsceneImages = 0;
   String _error;
 
   @override
@@ -60,6 +59,9 @@ class _MultiImagePageState extends State<MultiImagePage> {
   }
 
   Future<void> loadAssets() async {
+    loadModel();
+    obsceneImages = 0;
+    nonObsceneImages = 0;
     setState(() {
       images = List<Asset>();
     });
@@ -83,8 +85,6 @@ class _MultiImagePageState extends State<MultiImagePage> {
     setState(() {
       images = resultList;
       if (error == null) _error = 'No Error Dectected';
-
-      // TODO Start processing here
       processImages();
     });
   }
@@ -112,11 +112,19 @@ class _MultiImagePageState extends State<MultiImagePage> {
   processImages() async {
     final int numImages = images.length;
     statusImage = List.generate(numImages, (index) => false);
-    recognitions = List.generate(numImages, (index) => null);
+    setState(() {
+      recognitions = List.generate(numImages, (index) => null);
+    });
     for (var i = 0; i < numImages; i++) {
-      recognitions[i] = await processImage(i);
-
+      final _recognition = await processImage(i);
+      recognitions[i] = _recognition;
       setState(() {
+        if (_recognition.obscene > _recognition.nonObscene) {
+          obsceneImages++;
+        }
+        if (_recognition.nonObscene > _recognition.obscene) {
+          nonObsceneImages++;
+        }
         statusImage[i] = true;
       });
     }
@@ -139,6 +147,14 @@ class _MultiImagePageState extends State<MultiImagePage> {
           //   child: Text("Pick images"),
           //   onPressed: loadAssets,
           // ),
+          Center(
+            child: !recognitions?.any((element) => element == null)
+                ? images.length > 0
+                    ? Text(
+                        '$obsceneImages/${images.length} are obscene\n$nonObsceneImages/${images.length} are non-obscene')
+                    : Text('No images selected')
+                : Text('Processing images'),
+          ),
           Expanded(
             child: buildGridView(),
           ),

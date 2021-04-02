@@ -1,2 +1,2 @@
-obscene
 non-obscene
+obscene
