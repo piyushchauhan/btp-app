@@ -95,16 +95,15 @@ class _MultiImagePageState extends State<MultiImagePage> {
         buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
   }
 
-  Future<File> assetThumbToFile(Asset asset, String path) async {
+  Future<File> assetThumbToFile(Asset asset) async {
     final ByteData byteData = await asset.getByteData();
-    final path2 = await FlutterAbsolutePath.getAbsolutePath(asset.identifier);
-    return await writeToFile(byteData, path2);
+    final path = await FlutterAbsolutePath.getAbsolutePath(asset.identifier);
+    return await writeToFile(byteData, path);
   }
 
   Future<Recognition> processImage(int index) async {
-    final path = 'assets/$index.jpg';
     Asset asset = images[index];
-    final File img = await assetThumbToFile(asset, path);
+    final File img = await assetThumbToFile(asset);
     final recognitions = await recognizeImageBinary(img);
     return Recognition(List<RecognitionValue>.from(recognitions
         .map((e) => RecognitionValue.fromJson(Map<String, dynamic>.from(e)))));

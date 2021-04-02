@@ -5,6 +5,7 @@ import 'package:safety_app/image_page.dart';
 import 'package:safety_app/multi_image.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -35,77 +36,90 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) => Colors.green,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) => Colors.green,
+                      ),
+                    ),
+                    onPressed: () async {
+                      List<CameraDescription> cameras =
+                          await availableCameras();
+                      if (cameras.length > 0)
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CameraExampleHome(
+                              cameras: cameras,
+                              imei: imei,
+                            ),
+                          ),
+                        );
+                    },
+                    child: Container(
+                      child: Center(child: Text('REAL TIME')),
+                      height: 50,
                     ),
                   ),
-                  onPressed: () async {
-                    List<CameraDescription> cameras = await availableCameras();
-                    if (cameras.length > 0)
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) =>
+                            Colors.yellow, // Use the component's default.
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ImagePage()),
+                      );
+                    },
+                    child: Container(
+                      child: Center(child: Text('Gallery')),
+                      height: 50,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) =>
+                            Colors.red, // Use the component's default.
+                      ),
+                    ),
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CameraExampleHome(
-                            cameras: cameras,
-                            imei: imei,
-                          ),
-                        ),
+                            builder: (context) => MultiImagePage()),
                       );
-                  },
-                  child: Center(
-                    child: Text('REAL TIME'),
-                  ),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) =>
-                          Colors.yellow, // Use the component's default.
+                    },
+                    child: Container(
+                      child: Center(child: Text('Multi-image')),
+                      height: 50,
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ImagePage()),
-                    );
-                  },
-                  child: Container(child: Center(child: Text('Gallery'))),
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) =>
-                          Colors.yellow, // Use the component's default.
+                  /* 
+                  RaisedButton(
+                    color: Colors.lightBlue,
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VideoPlayerScreen()));
+                    },
+                    child: Container(
+                      child: Center(child: Text('VIDEO')),
                     ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MultiImagePage()),
-                    );
-                  },
-                  child: Container(child: Center(child: Text('Multi-image'))),
-                ),
-                /* 
-                RaisedButton(
-                  color: Colors.lightBlue,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => VideoPlayerScreen()));
-                  },
-                  child: Container(
-                    child: Center(child: Text('VIDEO')),
-                  ),
-                ), */
-              ],
+                  ), */
+                ],
+              ),
             ),
           ),
           Report(imei: imei),
