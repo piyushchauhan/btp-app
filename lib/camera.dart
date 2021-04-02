@@ -343,7 +343,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           recognizeImageBinary(File(file.path)).then((recognitions) {
             print('Found ${recognitions.length} recognitions');
 
-            // Build recognitions string
+            // Build recognitions string  
             recognitions.forEach((recognition) {
               final confidence = recognition['confidence'].toString();
               final label = recognition['label'].toString();

@@ -70,6 +70,25 @@ Future<List> recognizeImageBinary(File image) async {
   return recognitions;
 }
 
+Future<List> recognizeImage(img.Image image) async {
+  final start = DateTime.now();
+  img.Image oriImage = image;
+  final inputSize = 320;
+  img.Image resizedImage = img.copyResize(
+    oriImage,
+    height: inputSize,
+    width: inputSize,
+  );
+  var recognitions = await Tflite.runModelOnBinary(
+    binary: imageToByteListFloat32(resizedImage, inputSize, 117.0, 1),
+    numResults: 6,
+    threshold: 0.0,
+  );
+  final timeToInfer = DateTime.now().difference(start);
+  print("Inference took ${timeToInfer.inMilliseconds} ms");
+  return recognitions;
+}
+
 Future cameraClassif(CameraImage img) async {
   var recognitions = await Tflite.runModelOnFrame(
     bytesList: img.planes.map((plane) {

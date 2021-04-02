@@ -2,9 +2,9 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:safety_app/camera.dart';
 import 'package:safety_app/image_page.dart';
+import 'package:safety_app/multi_image.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -76,6 +76,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   },
                   child: Container(child: Center(child: Text('Gallery'))),
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) =>
+                          Colors.yellow, // Use the component's default.
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MultiImagePage()),
+                    );
+                  },
+                  child: Container(child: Center(child: Text('Multi-image'))),
                 ),
                 /* 
                 RaisedButton(

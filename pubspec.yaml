@@ -24,9 +24,11 @@ dependencies:
   flutter:
     sdk: flutter
   image_picker: ^0.6.7+9
+  multi_image_picker: ^4.6.5
   tflite: ^1.1.1
   video_player: ^1.0.1
   image: ^2.1.19
+  flutter_absolute_path: ^1.0.6
   cupertino_icons: ^1.0.0
   path_provider: ^1.6.24
   camera: ^0.6.3+2
